@@ -13,6 +13,7 @@ from app.routers import doctors
 from app.routers import admin
 from app.routers import ai_profiles
 from app.routers import documents
+from app.routers import setup
 
 app = FastAPI(
     title="AI Medical Assistant API",
@@ -44,6 +45,7 @@ app.include_router(doctors.router)
 app.include_router(admin.router)
 app.include_router(ai_profiles.router)
 app.include_router(documents.router)
+app.include_router(setup.router)
 
 
 @app.get("/")
