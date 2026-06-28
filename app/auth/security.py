@@ -13,15 +13,10 @@ from app.models import DoctorDB
 
 load_dotenv()
 
-print("JWT_SECRET_KEY =", os.environ.get("JWT_SECRET_KEY"))
-print("SECRET_KEY =", os.environ.get("SECRET_KEY"))
-
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 if not SECRET_KEY:
-    raise ValueError(
-        f"JWT_SECRET_KEY missing. Available keys: {list(os.environ.keys())}"
-    )
+    raise ValueError("JWT_SECRET_KEY is missing")
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
