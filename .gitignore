@@ -1,0 +1,7 @@
+.env
+venv/
+__pycache__/
+*.pyc
+medical_assistant.db
+alembic/__pycache__/
+app/__pycache__/
