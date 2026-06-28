@@ -8,6 +8,8 @@ DATABASE_URL = os.getenv(
     "sqlite:///./medical_assistant.db"
 )
 
+print("DATABASE_URL =", DATABASE_URL)
+
 connect_args = {}
 
 if DATABASE_URL.startswith("sqlite"):
@@ -20,6 +22,8 @@ engine = create_engine(
     connect_args=connect_args
 )
 
+print("ENGINE =", engine.url)
+
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
@@ -31,7 +35,6 @@ Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
-
     try:
         yield db
     finally:
