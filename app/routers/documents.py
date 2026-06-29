@@ -1,9 +1,10 @@
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, UploadFile, File, Form, Depends
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.auth.security import get_current_doctor
 from app.database import get_db
 from app.models import MedicalDocumentDB
 
@@ -22,7 +23,8 @@ async def upload_document(
     consultation_id: str = Form(...),
     document_type: str = Form("analysis"),
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_doctor=Depends(get_current_doctor)
 ):
     document_id = str(uuid4())
 
@@ -61,10 +63,12 @@ async def upload_document(
         "uploaded_at": document.uploaded_at
     }
 
+
 @router.get("/consultation/{consultation_id}")
 def get_documents_for_consultation(
     consultation_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_doctor=Depends(get_current_doctor)
 ):
     documents = (
         db.query(MedicalDocumentDB)
@@ -74,3 +78,32 @@ def get_documents_for_consultation(
     )
 
     return documents
+
+
+@router.delete("/{document_id}")
+def delete_document(
+    document_id: UUID,
+    db: Session = Depends(get_db),
+    current_doctor=Depends(get_current_doctor)
+):
+    document = db.query(MedicalDocumentDB).filter(
+        MedicalDocumentDB.id == str(document_id)
+    ).first()
+
+    if document is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found"
+        )
+
+    file_path = Path(document.file_path)
+
+    if file_path.exists():
+        file_path.unlink()
+
+    db.delete(document)
+    db.commit()
+
+    return {
+        "message": "Document deleted successfully"
+    }
