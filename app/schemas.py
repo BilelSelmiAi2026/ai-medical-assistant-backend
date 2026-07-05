@@ -42,6 +42,7 @@ class AIProfileTestRequest(BaseModel):
 
 
 class AIProfileTestResponse(BaseModel):
+    antecedents: str = ""
     chief_complaint: str
     history_of_present_illness: str
     assessment: str
@@ -116,6 +117,7 @@ class Patient(BaseModel):
     class Config:
         from_attributes = True
 
+
 # =========================
 # Consultation Models
 # =========================
@@ -131,6 +133,9 @@ class Consultation(BaseModel):
     transcript: str
     created_at: datetime
 
+    class Config:
+        from_attributes = True
+
 
 # =========================
 # Medical Note Models
@@ -141,6 +146,7 @@ class GenerateNoteRequest(BaseModel):
 
 
 class MedicalNoteUpdateRequest(BaseModel):
+    antecedents: str = ""
     chief_complaint: str
     history_of_present_illness: str
     assessment: str
@@ -150,11 +156,17 @@ class MedicalNoteUpdateRequest(BaseModel):
 class MedicalNote(BaseModel):
     id: UUID | None = None
     consultation_id: UUID
+
+    antecedents: str = ""
     chief_complaint: str
     history_of_present_illness: str
     assessment: str
     plan: str
+
     generated_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 # =========================

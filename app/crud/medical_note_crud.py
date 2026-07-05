@@ -52,6 +52,7 @@ def generate_medical_note(
         )
         db.add(note)
 
+    note.antecedents = generated_note.antecedents
     note.chief_complaint = generated_note.chief_complaint
     note.history_of_present_illness = generated_note.history_of_present_illness
     note.assessment = generated_note.assessment
@@ -126,6 +127,7 @@ def update_medical_note(
     if note is None:
         return None
 
+    note.antecedents = request.antecedents
     note.chief_complaint = request.chief_complaint
     note.history_of_present_illness = request.history_of_present_illness
     note.assessment = request.assessment

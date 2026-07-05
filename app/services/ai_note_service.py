@@ -16,10 +16,14 @@ client = OpenAI(
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 
+DEFAULT_ANTECEDENTS = (
+    "Aucun antécédent médical ou chirurgical rapporté."
+)
+
 DEFAULT_PROMPT = """
 You are an experienced medical scribe.
 
-Analyze the consultation transcript and generate a professional SOAP-style medical note.
+Analyze the consultation transcript and generate a professional medical note.
 
 Language rules:
 - The consultation transcript may be in Arabic, Tunisian Arabic, French, German, or English.
@@ -27,16 +31,25 @@ Language rules:
 - Translate the medical information into professional medical French.
 - Never generate the note in Arabic.
 
+Medical note structure:
+- Antécédents
+- Motif principal
+- Histoire de la maladie actuelle
+- Évaluation
+- CAT : Conduite à tenir
+
 Output rules:
 - Return ONLY valid JSON.
 - Do NOT use markdown.
 - Do NOT wrap the response in ```json blocks.
 - Populate all fields.
-- If information is missing, explicitly state that the information was not mentioned.
+- If no antecedents are mentioned, write:
+  "Aucun antécédent médical ou chirurgical rapporté."
 
 Required JSON structure:
 
 {
+  "antecedents": "",
   "chief_complaint": "",
   "history_of_present_illness": "",
   "assessment": "",
@@ -75,6 +88,7 @@ Consultation Transcript:
 
     except Exception:
         return {
+            "antecedents": DEFAULT_ANTECEDENTS,
             "chief_complaint": "Unable to parse AI response",
             "history_of_present_illness": raw_text,
             "assessment": "Parsing failed",
@@ -106,13 +120,26 @@ def generate_note_from_transcript(
 
     return MedicalNote(
         consultation_id=consultation_id,
-        chief_complaint=data.get("chief_complaint", "Not provided"),
+        antecedents=data.get(
+            "antecedents",
+            DEFAULT_ANTECEDENTS
+        ),
+        chief_complaint=data.get(
+            "chief_complaint",
+            "Not provided"
+        ),
         history_of_present_illness=data.get(
             "history_of_present_illness",
             "Not provided"
         ),
-        assessment=data.get("assessment", "Not provided"),
-        plan=data.get("plan", "Not provided"),
+        assessment=data.get(
+            "assessment",
+            "Not provided"
+        ),
+        plan=data.get(
+            "plan",
+            "Not provided"
+        ),
         generated_at=datetime.utcnow()
     )
 
@@ -129,11 +156,24 @@ def test_prompt(
     )
 
     return {
-        "chief_complaint": data.get("chief_complaint", "Not provided"),
+        "antecedents": data.get(
+            "antecedents",
+            DEFAULT_ANTECEDENTS
+        ),
+        "chief_complaint": data.get(
+            "chief_complaint",
+            "Not provided"
+        ),
         "history_of_present_illness": data.get(
             "history_of_present_illness",
             "Not provided"
         ),
-        "assessment": data.get("assessment", "Not provided"),
-        "plan": data.get("plan", "Not provided")
+        "assessment": data.get(
+            "assessment",
+            "Not provided"
+        ),
+        "plan": data.get(
+            "plan",
+            "Not provided"
+        )
     }

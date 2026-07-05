@@ -119,6 +119,7 @@ class MedicalNoteDB(Base):
         nullable=False
     )
 
+    antecedents = Column(Text, nullable=False, default="")
     chief_complaint = Column(Text, nullable=False)
     history_of_present_illness = Column(Text, nullable=False)
     assessment = Column(Text, nullable=False)
